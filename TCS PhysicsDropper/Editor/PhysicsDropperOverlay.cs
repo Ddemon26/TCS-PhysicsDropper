@@ -10,10 +10,7 @@ using PopupWindow = UnityEditor.PopupWindow;
 namespace TCS.StudioUtils {
     [Overlay(typeof(SceneView), null)]
     internal class PhysicsDropperOverlay : Overlay, ICreateToolbar {
-        public override VisualElement CreatePanelContent() {
-            //set the label for this panel to wrap the text
-            return new PhysicsDropToolbarButton();
-        }
+        public override VisualElement CreatePanelContent() => new PhysicsDropToolbarButton();
 
         public override void OnCreated() {
             base.OnCreated();
@@ -27,7 +24,7 @@ namespace TCS.StudioUtils {
 
         public IEnumerable<string> toolbarElements { get { yield return PhysicsDropToolbarButton.ID; } }
 
-        public enum StoppingCriteria {
+        enum StoppingCriteria {
             TimeAfterImpact,
             VelocityThreshold
         }
@@ -35,7 +32,7 @@ namespace TCS.StudioUtils {
         class PhysicsDropper {
             public float TimeAfterImpact = 1.0f;
             public float VelocityThreshold = 0.001f;
-            public float MaxSimulationTime = 10f;
+            public float MaxSimulationTime = 60f;
             readonly List<PhysicsDropperObject> m_droppingObjects = new();
             bool m_isDropping;
             SimulationMode m_prevSimulationMode;
@@ -188,7 +185,6 @@ namespace TCS.StudioUtils {
                 if (!allDone) return;
                 StopDropping();
                 SendBool?.Invoke(false);
-                //Debug.Log("Physics Dropper: Drop complete.");
             }
 
             public void StopDropping() {
@@ -221,7 +217,6 @@ namespace TCS.StudioUtils {
                 m_droppingObjects.Clear();
                 m_isDropping = false;
                 EditorApplication.update -= UpdatePhysics;
-                //Debug.Log("Physics Dropper: Dropping stopped.");
             }
         }
 
@@ -254,13 +249,17 @@ namespace TCS.StudioUtils {
                 rect1.y += 18f;
                 m_physicsDropper.StoppingCriteria = (StoppingCriteria)EditorGUI.EnumPopup(rect1, m_physicsDropper.StoppingCriteria);
                 rect1.y += 18f;
-                EditorGUI.LabelField(rect1, "Time After Impact");
-                rect1.y += 18f;
-                m_physicsDropper.TimeAfterImpact = EditorGUI.FloatField(rect1, m_physicsDropper.TimeAfterImpact);
-                rect1.y += 18f;
-                EditorGUI.LabelField(rect1, "Velocity Threshold");
-                rect1.y += 18f;
-                m_physicsDropper.VelocityThreshold = EditorGUI.FloatField(rect1, m_physicsDropper.VelocityThreshold);
+
+                if (m_physicsDropper.StoppingCriteria == StoppingCriteria.TimeAfterImpact) {
+                    EditorGUI.LabelField(rect1, "Time After Impact");
+                    rect1.y += 18f;
+                    m_physicsDropper.TimeAfterImpact = EditorGUI.FloatField(rect1, m_physicsDropper.TimeAfterImpact);
+                } else if (m_physicsDropper.StoppingCriteria == StoppingCriteria.VelocityThreshold) {
+                    EditorGUI.LabelField(rect1, "Velocity Threshold");
+                    rect1.y += 18f;
+                    m_physicsDropper.VelocityThreshold = EditorGUI.FloatField(rect1, m_physicsDropper.VelocityThreshold);
+                }
+
                 rect1.y += 18f;
                 EditorGUI.LabelField(rect1, "Maximum Simulation Time");
                 rect1.y += 18f;
@@ -274,8 +273,7 @@ namespace TCS.StudioUtils {
             public const string ID = "PhysicsDropToolbarButton";
             readonly PhysicsDropper m_physicsDropper = new();
             public EditorWindow containerWindow { get; set; }
-
-            // Parameterless constructor
+            
             public PhysicsDropToolbarButton() {
                 icon = Resources.Load<Sprite>("d_ConstantForceRed").texture;
                 name = "PhysicsDropToolbarButton";
@@ -297,10 +295,12 @@ namespace TCS.StudioUtils {
                 }
             }
             void OnAttachedToPanel(AttachToPanelEvent evt) {
-                Debug.Log("Element attached to panel");
+                //NO-OP
+                //Debug.Log("Element attached to panel");
             }
             void OnDetachFromPanel(DetachFromPanelEvent evt) {
-                Debug.Log("Element detached from panel");
+                //NO-OP
+                //Debug.Log("Element detached from panel");
             }
         }
 

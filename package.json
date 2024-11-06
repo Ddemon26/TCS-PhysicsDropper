@@ -1,0 +1,14 @@
+{
+  "name": "com.tcs.physicsdropper",
+  "displayName": "TCS Physics Dropper",
+  "description": "A simple navigation system for Unity",
+  "version": "1.0.1",
+  "keywords": ["navigation", "system", "unity", "simple"],
+  "category": "Tent City Studio",
+  "dependencies": {},
+  "author": {
+    "name": "Damon Fedorick",
+    "url": "https://github.com/Ddemon26/TCS-PhysicsDropper"
+  },
+  "documentationUrl": "https://github.com/Ddemon26/TCS-Navigation/blob/main/README.md"
+}
