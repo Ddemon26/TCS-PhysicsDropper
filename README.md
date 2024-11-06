@@ -5,10 +5,10 @@
 [![Join our Discord](https://img.shields.io/badge/Discord-Join%20Us-7289DA?logo=discord&logoColor=white)](https://discord.gg/knwtcq3N2a)
 ![Discord](https://img.shields.io/discord/1047781241010794506)
 
-![GitHub Forks](https://img.shields.io/github/forks/Ddemon26/PhysicsDropperOverlay)
-![GitHub Contributors](https://img.shields.io/github/contributors/Ddemon26/PhysicsDropperOverlay)
-![GitHub Stars](https://img.shields.io/github/stars/Ddemon26/PhysicsDropperOverlay)
-![GitHub Repo Size](https://img.shields.io/github/repo-size/Ddemon26/PhysicsDropperOverlay)
+![GitHub Forks](https://img.shields.io/github/forks/Ddemon26/TCS-PhysicsDropper)
+![GitHub Contributors](https://img.shields.io/github/contributors/Ddemon26/TCS-PhysicsDropper)
+![GitHub Stars](https://img.shields.io/github/stars/Ddemon26/TCS-PhysicsDropper)
+![GitHub Repo Size](https://img.shields.io/github/repo-size/Ddemon26/TCS-PhysicsDropper)
 
 ## Overview
 
