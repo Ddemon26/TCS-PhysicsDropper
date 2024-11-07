@@ -13,7 +13,7 @@ namespace TCS.PhysicsDropper {
         public PhysicsDropToolbarButton() {
             icon = Resources.Load<Sprite>("d_ConstantForceRed").texture;
             name = "PhysicsDropToolbarButton";
-            tooltip = L10n.Tr("Toggle skybox, fog, and various other effects.");
+            tooltip = L10n.Tr("Physics Dropper");
             dropdownClicked += () => PopupWindow.Show(worldBound, new PhysicsDropperWindow(m_physicsDropper));
             this.RegisterValueChangedCallback(evt => OnToggleChanged(evt.newValue));
             RegisterCallback(new EventCallback<AttachToPanelEvent>(OnAttachedToPanel));
