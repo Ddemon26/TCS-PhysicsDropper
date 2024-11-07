@@ -5,15 +5,15 @@ using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
 namespace TCS.PhysicsDropper {
-    
     internal enum StoppingCriteria {
         TimeAfterImpact,
         VelocityThreshold
     }
+
     internal sealed class PhysicsDropper {
         public float TimeAfterImpact = 1.0f;
         public float VelocityThreshold = 0.001f;
-        public float MaxSimulationTime = 60f;
+        public float MaxSimulationTime = 20f;
         readonly List<PhysicsDropperObject> m_droppingObjects = new();
         bool m_isDropping;
         SimulationMode m_prevSimulationMode;
@@ -47,8 +47,8 @@ namespace TCS.PhysicsDropper {
 
                 // Handle Collider
                 var collider = obj.GetComponent<Collider>();
-                bool hadCollider = collider != null;
-                bool originalIsConvex = true;
+                bool hadCollider = collider;
+                var originalIsConvex = true;
 
                 if (!collider) {
                     // Add MeshCollider without registering with Undo
@@ -64,9 +64,9 @@ namespace TCS.PhysicsDropper {
 
                 // Handle Rigidbody
                 var rb = obj.GetComponent<Rigidbody>();
-                bool hadRigidbody = rb != null;
-                CollisionDetectionMode originalCollisionDetectionMode = CollisionDetectionMode.Discrete;
-                bool originalIsKinematic = true;
+                bool hadRigidbody = rb;
+                var originalCollisionDetectionMode = CollisionDetectionMode.Discrete;
+                var originalIsKinematic = true;
 
                 if (rb) {
                     originalCollisionDetectionMode = rb.collisionDetectionMode;
@@ -109,16 +109,15 @@ namespace TCS.PhysicsDropper {
                 );
             }
 
-            if (m_droppingObjects.Count > 0) {
-                m_prevSimulationMode = Physics.simulationMode;
-                Physics.simulationMode = SimulationMode.Script;
+            if (m_droppingObjects.Count <= 0) return;
+            m_prevSimulationMode = Physics.simulationMode;
+            Physics.simulationMode = SimulationMode.Script;
 
-                m_isDropping = true;
-                EditorApplication.update += UpdatePhysics;
+            m_isDropping = true;
+            EditorApplication.update += UpdatePhysics;
 
-                // Subscribe to Undo event
-                Undo.undoRedoPerformed += OnUndoRedoPerformed;
-            }
+            // Subscribe to Undo event
+            Undo.undoRedoPerformed += OnUndoRedoPerformed;
         }
 
         void UpdatePhysics() {
@@ -154,23 +153,34 @@ namespace TCS.PhysicsDropper {
                     continue;
                 }
 
-                if (StoppingCriteria == StoppingCriteria.TimeAfterImpact) {
-                    if (!obj.HasLanded) {
+                switch (StoppingCriteria) {
+                    case StoppingCriteria.TimeAfterImpact when !obj.HasLanded:
+                    {
                         if (obj.DropperComponent.m_hasCollided) {
                             obj.HasLanded = true;
                         }
+
+                        break;
                     }
-                    else {
+                    case StoppingCriteria.TimeAfterImpact:
+                    {
                         obj.Timer += simulationStep;
                         if (obj.Timer >= TimeAfterImpact) {
                             obj.IsDroppingComplete = true;
                         }
+
+                        break;
                     }
-                }
-                else if (StoppingCriteria == StoppingCriteria.VelocityThreshold) {
-                    if (obj.Rigidbody.linearVelocity.magnitude <= VelocityThreshold) {
-                        obj.IsDroppingComplete = true;
+                    case StoppingCriteria.VelocityThreshold:
+                    {
+                        if (obj.Rigidbody.linearVelocity.magnitude <= VelocityThreshold) {
+                            obj.IsDroppingComplete = true;
+                        }
+
+                        break;
                     }
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
             }
 
@@ -180,12 +190,11 @@ namespace TCS.PhysicsDropper {
         }
 
         void OnUndoRedoPerformed() {
-            if (m_isDropping) {
-                StopDropping();
-                RestoreTransforms();
-                SendFalseBool?.Invoke(false);
-                Debug.Log("Physics Dropper: Undo operation detected, restored transforms.");
-            }
+            if (!m_isDropping) return;
+            StopDropping();
+            RestoreTransforms();
+            SendFalseBool?.Invoke(false);
+            //Debug.Log("Physics Dropper: Undo operation detected, restored transforms.");
         }
 
         void RestoreTransforms() {
@@ -197,10 +206,9 @@ namespace TCS.PhysicsDropper {
                 transform.rotation = obj.OriginalRotation;
 
                 // Optionally, reset Rigidbody velocities to prevent further movement
-                if (obj.Rigidbody) {
-                    obj.Rigidbody.linearVelocity = Vector3.zero;
-                    obj.Rigidbody.angularVelocity = Vector3.zero;
-                }
+                if (!obj.Rigidbody) continue;
+                obj.Rigidbody.linearVelocity = Vector3.zero;
+                obj.Rigidbody.angularVelocity = Vector3.zero;
             }
         }
 
