@@ -63,7 +63,7 @@ To use the Physics Dropper Overlay:
 
 Suppose you are designing a forest environment and need to place rocks, branches, and other natural objects on uneven terrain. Instead of manually adjusting each object's position, use the Physics Dropper tool to simulate dropping them, allowing them to settle realistically on the terrain's surface.
 
-## Toolbar Button and Interface
+## <img src="docs~/images/IconImage.png" alt="Physics Dropper in Action" width="64" /> Toolbar Button and Interface
 
 - **PhysicsDropToolbarButton**: This is the primary way to interact with the Physics Dropper. The button, located in Unity's SceneView toolbar, allows you to start, configure, and stop the physics simulation.
 - **PhysicsDropperWindow**: A popup window that provides controls for modifying parameters such as the stopping criteria and the maximum allowable simulation time.
