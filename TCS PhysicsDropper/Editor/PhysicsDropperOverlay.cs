@@ -38,8 +38,8 @@ namespace TCS.StudioUtils {
             SimulationMode m_prevSimulationMode;
             public StoppingCriteria StoppingCriteria = StoppingCriteria.TimeAfterImpact;
 
-            //public bool m_sendBool = false;
             public Action<bool> SendBool;
+
             public void DropSelectedObjects() {
                 GameObject[] selectedObjects = Selection.gameObjects;
 
@@ -48,28 +48,29 @@ namespace TCS.StudioUtils {
                     return;
                 }
 
-                Undo.RegisterCompleteObjectUndo
-                (
-                    Array.ConvertAll
-                    (
-                        selectedObjects,
-                        item => (Object)item
-                    ), "Drop Objects"
-                );
-
                 m_droppingObjects.Clear();
 
+                // Iterate through each selected GameObject
                 foreach (var obj in selectedObjects) {
                     if (!obj) {
                         Debug.LogError("Physics Dropper: One of the selected GameObjects is null!");
                         continue;
                     }
 
+                    var transform = obj.transform;
+                    var originalPosition = transform.position;
+                    var originalRotation = transform.rotation;
+
+                    // Register Undo for the transform (captures position and rotation)
+                    Undo.RegisterCompleteObjectUndo(transform, "Drop Objects");
+
+                    // Handle Collider
                     var collider = obj.GetComponent<Collider>();
-                    bool hadCollider = collider;
-                    var originalIsConvex = true;
+                    bool hadCollider = collider != null;
+                    bool originalIsConvex = true;
 
                     if (!collider) {
+                        // Add MeshCollider without registering with Undo
                         collider = obj.AddComponent<MeshCollider>();
                         ((MeshCollider)collider).convex = true;
                     }
@@ -80,23 +81,28 @@ namespace TCS.StudioUtils {
                         }
                     }
 
+                    // Handle Rigidbody
                     var rb = obj.GetComponent<Rigidbody>();
-                    bool hadRigidbody = rb;
-                    var originalCollisionDetectionMode = CollisionDetectionMode.Discrete;
-                    var originalIsKinematic = true;
+                    bool hadRigidbody = rb != null;
+                    CollisionDetectionMode originalCollisionDetectionMode = CollisionDetectionMode.Discrete;
+                    bool originalIsKinematic = true;
+
                     if (rb) {
                         originalCollisionDetectionMode = rb.collisionDetectionMode;
                         originalIsKinematic = rb.isKinematic;
                     }
                     else {
+                        // Add Rigidbody without registering with Undo
                         rb = obj.AddComponent<Rigidbody>();
                     }
 
                     rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
                     rb.isKinematic = false;
 
+                    // Handle PhysicsDropperComponent
                     var dropperComponent = obj.GetComponent<PhysicsDropperComponent>();
                     if (!dropperComponent) {
+                        // Add PhysicsDropperComponent without registering with Undo
                         dropperComponent = obj.AddComponent<PhysicsDropperComponent>();
                     }
 
@@ -115,6 +121,8 @@ namespace TCS.StudioUtils {
                             OriginalCollisionDetectionMode = originalCollisionDetectionMode,
                             OriginalIsKinematic = originalIsKinematic,
                             OriginalIsConvex = originalIsConvex,
+                            OriginalPosition = originalPosition,
+                            OriginalRotation = originalRotation,
                             TotalSimulationTime = 0f
                         }
                     );
@@ -126,6 +134,9 @@ namespace TCS.StudioUtils {
 
                     m_isDropping = true;
                     EditorApplication.update += UpdatePhysics;
+
+                    // Subscribe to Undo event
+                    Undo.undoRedoPerformed += OnUndoRedoPerformed;
                 }
             }
 
@@ -187,6 +198,30 @@ namespace TCS.StudioUtils {
                 SendBool?.Invoke(false);
             }
 
+            void OnUndoRedoPerformed() {
+                if (m_isDropping) {
+                    StopDropping();
+                    RestoreTransforms();
+                    Debug.Log("Physics Dropper: Undo operation detected, restored transforms.");
+                }
+            }
+
+            void RestoreTransforms() {
+                foreach (var obj in m_droppingObjects) {
+                    if (!obj.GameObject) continue;
+                    var transform = obj.GameObject.transform;
+                    Undo.RecordObject(transform, "Restore Transform");
+                    transform.position = obj.OriginalPosition;
+                    transform.rotation = obj.OriginalRotation;
+
+                    // Optionally, reset Rigidbody velocities to prevent further movement
+                    if (obj.Rigidbody) {
+                        obj.Rigidbody.linearVelocity = Vector3.zero;
+                        obj.Rigidbody.angularVelocity = Vector3.zero;
+                    }
+                }
+            }
+
             public void StopDropping() {
                 Physics.simulationMode = m_prevSimulationMode;
 
@@ -194,7 +229,9 @@ namespace TCS.StudioUtils {
                     if (obj.Rigidbody) {
                         obj.Rigidbody.isKinematic = obj.OriginalIsKinematic;
                         obj.Rigidbody.collisionDetectionMode = obj.OriginalCollisionDetectionMode;
+
                         if (!obj.HadRigidbody) {
+                            // Remove Rigidbody without registering with Undo
                             Object.DestroyImmediate(obj.Rigidbody);
                         }
                     }
@@ -205,11 +242,13 @@ namespace TCS.StudioUtils {
                         }
 
                         if (!obj.HadCollider) {
+                            // Remove Collider without registering with Undo
                             Object.DestroyImmediate(obj.Collider);
                         }
                     }
 
                     if (obj.DropperComponent) {
+                        // Remove PhysicsDropperComponent without registering with Undo
                         Object.DestroyImmediate(obj.DropperComponent);
                     }
                 }
@@ -217,6 +256,9 @@ namespace TCS.StudioUtils {
                 m_droppingObjects.Clear();
                 m_isDropping = false;
                 EditorApplication.update -= UpdatePhysics;
+
+                // Unsubscribe from Undo event
+                Undo.undoRedoPerformed -= OnUndoRedoPerformed;
             }
         }
 
@@ -254,7 +296,8 @@ namespace TCS.StudioUtils {
                     EditorGUI.LabelField(rect1, "Time After Impact");
                     rect1.y += 18f;
                     m_physicsDropper.TimeAfterImpact = EditorGUI.FloatField(rect1, m_physicsDropper.TimeAfterImpact);
-                } else if (m_physicsDropper.StoppingCriteria == StoppingCriteria.VelocityThreshold) {
+                }
+                else if (m_physicsDropper.StoppingCriteria == StoppingCriteria.VelocityThreshold) {
                     EditorGUI.LabelField(rect1, "Velocity Threshold");
                     rect1.y += 18f;
                     m_physicsDropper.VelocityThreshold = EditorGUI.FloatField(rect1, m_physicsDropper.VelocityThreshold);
@@ -273,7 +316,7 @@ namespace TCS.StudioUtils {
             public const string ID = "PhysicsDropToolbarButton";
             readonly PhysicsDropper m_physicsDropper = new();
             public EditorWindow containerWindow { get; set; }
-            
+
             public PhysicsDropToolbarButton() {
                 icon = Resources.Load<Sprite>("d_ConstantForceRed").texture;
                 name = "PhysicsDropToolbarButton";
@@ -318,6 +361,8 @@ namespace TCS.StudioUtils {
             public bool OriginalIsKinematic;
             public bool OriginalIsConvex;
             public float TotalSimulationTime;
+            public Vector3 OriginalPosition;
+            public Quaternion OriginalRotation;
         }
     }
 }
