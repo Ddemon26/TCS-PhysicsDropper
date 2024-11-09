@@ -40,6 +40,10 @@ Workflow steps:
 
 ## Installation
 
+```
+https://github.com/Ddemon26/TCS-PhysicsDropper.git
+```
+
 To install the Physics Dropper Overlay:
 
 1. Clone or download this repository.
