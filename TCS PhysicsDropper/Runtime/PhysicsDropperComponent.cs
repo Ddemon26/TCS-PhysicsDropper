@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-namespace TCS.StudioUtils {
+namespace TCS.PhysicsDropper {
     [ExecuteAlways]
     public class PhysicsDropperComponent : MonoBehaviour {
         public bool m_hasCollided = false;

@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using TCS.StudioUtils;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
+
 namespace TCS.PhysicsDropper {
     internal enum StoppingCriteria {
         TimeAfterImpact,
@@ -21,6 +22,15 @@ namespace TCS.PhysicsDropper {
 
         public Action<bool> SendFalseBool;
 
+        // Helper method to check for MeshRenderer
+        static bool HasMeshRenderer(GameObject obj) =>
+            obj.GetComponent<MeshRenderer>()
+            || obj.GetComponentsInChildren<Transform>(true)
+                .Any
+                (
+                    child => child.GetComponent<MeshRenderer>()
+                );
+
         public void DropSelectedObjects() {
             GameObject[] selectedObjects = Selection.gameObjects;
 
@@ -29,9 +39,16 @@ namespace TCS.PhysicsDropper {
                 return;
             }
 
+            // Check for at least one MeshRenderer in selected objects or their children
+            bool hasAtLeastOneMeshRenderer = selectedObjects.Any(HasMeshRenderer);
+
+            if (!hasAtLeastOneMeshRenderer) {
+                Debug.LogError("Physics Dropper: At least one selected GameObject or its children must have a MeshRenderer component.");
+                return;
+            }
+
             m_droppingObjects.Clear();
 
-            // Iterate through each selected GameObject
             foreach (var obj in selectedObjects) {
                 if (!obj) {
                     Debug.LogError("Physics Dropper: One of the selected GameObjects is null!");
@@ -45,34 +62,18 @@ namespace TCS.PhysicsDropper {
                 // Register Undo for the transform (captures position and rotation)
                 Undo.RegisterCompleteObjectUndo(transform, "Drop Objects");
 
-                // Handle Collider
-                var collider = obj.GetComponent<Collider>();
-                bool hadCollider = collider;
-                var originalIsConvex = true;
-
-                if (!collider) {
-                    // Add MeshCollider without registering with Undo
-                    collider = obj.AddComponent<MeshCollider>();
-                    ((MeshCollider)collider).convex = true;
-                }
-                else if (collider is MeshCollider meshCollider) {
-                    originalIsConvex = meshCollider.convex;
-                    if (!meshCollider.convex) {
-                        meshCollider.convex = true;
-                    }
-                }
-
-                // Handle Rigidbody
+                bool hadRigidbody;
                 var rb = obj.GetComponent<Rigidbody>();
-                bool hadRigidbody = rb;
                 var originalCollisionDetectionMode = CollisionDetectionMode.Discrete;
                 var originalIsKinematic = true;
 
                 if (rb) {
+                    hadRigidbody = true;
                     originalCollisionDetectionMode = rb.collisionDetectionMode;
                     originalIsKinematic = rb.isKinematic;
                 }
                 else {
+                    hadRigidbody = false;
                     // Add Rigidbody without registering with Undo
                     rb = obj.AddComponent<Rigidbody>();
                 }
@@ -87,26 +88,84 @@ namespace TCS.PhysicsDropper {
                     dropperComponent = obj.AddComponent<PhysicsDropperComponent>();
                 }
 
-                m_droppingObjects.Add
-                (
-                    new PhysicsDropperObject {
-                        GameObject = obj,
-                        Rigidbody = rb,
-                        HadRigidbody = hadRigidbody,
-                        Collider = collider,
-                        HadCollider = hadCollider,
-                        DropperComponent = dropperComponent,
-                        Timer = 0f,
-                        HasLanded = false,
-                        IsDroppingComplete = false,
-                        OriginalCollisionDetectionMode = originalCollisionDetectionMode,
-                        OriginalIsKinematic = originalIsKinematic,
-                        OriginalIsConvex = originalIsConvex,
-                        OriginalPosition = originalPosition,
-                        OriginalRotation = originalRotation,
-                        TotalSimulationTime = 0f
+                // Prepare data for PhysicsDropperObject
+                var physicsDropperObject = new PhysicsDropperObject {
+                    GameObject = obj,
+                    Rigidbody = rb,
+                    HadRigidbody = hadRigidbody,
+                    DropperComponent = dropperComponent,
+                    Timer = 0f,
+                    HasLanded = false,
+                    IsDroppingComplete = false,
+                    OriginalCollisionDetectionMode = originalCollisionDetectionMode,
+                    OriginalIsKinematic = originalIsKinematic,
+                    OriginalPosition = originalPosition,
+                    OriginalRotation = originalRotation,
+                    TotalSimulationTime = 0f,
+                    ColliderDataList = new List<ColliderData>()
+                };
+
+                if (obj.transform.childCount > 0) {
+                    // Object has children
+                    // Add colliders to all descendants
+                    foreach (var descendant in obj.GetComponentsInChildren<Transform>(includeInactive: true)) {
+                        if (descendant == obj.transform) continue; // Skip the parent itself
+
+                        var collider = descendant.GetComponent<Collider>();
+                        bool hadCollider = collider;
+                        var originalIsConvex = true;
+
+                        if (!collider) {
+                            // Add MeshCollider without registering with Undo
+                            collider = descendant.gameObject.AddComponent<MeshCollider>();
+                            ((MeshCollider)collider).convex = true;
+                        }
+                        else if (collider is MeshCollider meshCollider) {
+                            originalIsConvex = meshCollider.convex;
+                            if (!meshCollider.convex) {
+                                meshCollider.convex = true;
+                            }
+                        }
+
+                        // Add collider data to ColliderDataList
+                        physicsDropperObject.ColliderDataList.Add
+                        (
+                            new ColliderData {
+                                GameObject = descendant.gameObject,
+                                Collider = collider,
+                                HadCollider = hadCollider,
+                                OriginalIsConvex = originalIsConvex
+                            }
+                        );
                     }
-                );
+                }
+                else {
+                    // Object has no children
+                    // Handle Collider for obj
+
+                    var collider = obj.GetComponent<Collider>();
+                    bool hadCollider = collider;
+                    var originalIsConvex = true;
+
+                    if (!collider) {
+                        // Add MeshCollider without registering with Undo
+                        collider = obj.AddComponent<MeshCollider>();
+                        ((MeshCollider)collider).convex = true;
+                    }
+                    else if (collider is MeshCollider meshCollider) {
+                        originalIsConvex = meshCollider.convex;
+                        if (!meshCollider.convex) {
+                            meshCollider.convex = true;
+                        }
+                    }
+
+                    // Set collider data in physicsDropperObject
+                    physicsDropperObject.Collider = collider;
+                    physicsDropperObject.HadCollider = hadCollider;
+                    physicsDropperObject.OriginalIsConvex = originalIsConvex;
+                }
+
+                m_droppingObjects.Add(physicsDropperObject);
             }
 
             if (m_droppingObjects.Count <= 0) return;
@@ -135,9 +194,14 @@ namespace TCS.PhysicsDropper {
 
             // Check if all objects have finished dropping
             var allDone = true;
-            foreach (var obj in m_droppingObjects) {
-                if (obj.IsDroppingComplete) continue;
-
+            foreach
+            (
+                var obj in m_droppingObjects
+                    .Where
+                    (
+                        obj => !obj.IsDroppingComplete
+                    )
+            ) {
                 // Check if the GameObject or Rigidbody has been destroyed
                 if (!obj.GameObject || !obj.Rigidbody || !obj.DropperComponent) {
                     obj.IsDroppingComplete = true;
@@ -194,7 +258,6 @@ namespace TCS.PhysicsDropper {
             StopDropping();
             RestoreTransforms();
             SendFalseBool?.Invoke(false);
-            //Debug.Log("Physics Dropper: Undo operation detected, restored transforms.");
         }
 
         void RestoreTransforms() {
@@ -223,6 +286,19 @@ namespace TCS.PhysicsDropper {
                     if (!obj.HadRigidbody) {
                         // Remove Rigidbody without registering with Undo
                         Object.DestroyImmediate(obj.Rigidbody);
+                    }
+                }
+
+                if (obj.ColliderDataList is { Count: > 0 }) {
+                    foreach (var colliderData in obj.ColliderDataList) {
+                        if (colliderData.Collider is MeshCollider meshCollider) {
+                            meshCollider.convex = colliderData.OriginalIsConvex;
+                        }
+
+                        if (!colliderData.HadCollider) {
+                            // Remove Collider without registering with Undo
+                            Object.DestroyImmediate(colliderData.Collider);
+                        }
                     }
                 }
 
