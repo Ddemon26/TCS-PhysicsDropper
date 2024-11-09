@@ -1,7 +1,7 @@
 # Physics Dropper Overlay for Unity
 
-![Physics Dropper in Action 1](docs\~/images/ExampleGif_1.gif)
-![Physics Dropper in Action 2](docs\~/images/ExampleGif_2.gif)
+![Physics Dropper in Action 1](docs~/images/ExampleGif_1.gif)![Physics Dropper in Action 2](docs~/images/ExampleGif_2.gif)
+![Physics Dropper in Action 3](docs~/images/ExampleGif_3.gif)![Physics Dropper in Action 4](docs~/images/ExampleGif_4.gif)
 
 [![Join our Discord](https://img.shields.io/badge/Discord-Join%20Us-7289DA?logo=discord&logoColor=white)](https://discord.gg/knwtcq3N2a)
 ![Discord](https://img.shields.io/discord/1047781241010794506)

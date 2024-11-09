@@ -10,7 +10,12 @@ namespace TCS.PhysicsDropper {
 
         public override void OnCreated() {
             base.OnCreated();
-            collapsedIcon = Resources.Load<Sprite>("d_ConstantForceRed").texture;
+            var sprite = Resources.Load<Sprite>("d_ConstantForceRed");
+            if (sprite) {
+                collapsedIcon = sprite.texture;
+            } else {
+                Debug.LogError("Sprite 'd_ConstantForceRed' not found in Resources.");
+            }
         }
 
         public override void OnWillBeDestroyed() {
