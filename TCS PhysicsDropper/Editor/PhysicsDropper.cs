@@ -114,16 +114,25 @@ namespace TCS.PhysicsDropper {
                         var collider = descendant.GetComponent<Collider>();
                         bool hadCollider = collider;
                         var originalIsConvex = true;
+                        var originalIsTrigger = false; // Initialize the variable
 
                         if (!collider) {
                             // Add MeshCollider without registering with Undo
                             collider = descendant.gameObject.AddComponent<MeshCollider>();
                             ((MeshCollider)collider).convex = true;
+                            collider.isTrigger = false; // Ensure it's not a trigger
                         }
-                        else if (collider is MeshCollider meshCollider) {
-                            originalIsConvex = meshCollider.convex;
-                            if (!meshCollider.convex) {
-                                meshCollider.convex = true;
+                        else {
+                            originalIsTrigger = collider.isTrigger; // Store original isTrigger
+                            if (originalIsTrigger) {
+                                collider.isTrigger = false; // Set to false for simulation
+                            }
+
+                            if (collider is MeshCollider meshCollider) {
+                                originalIsConvex = meshCollider.convex;
+                                if (!meshCollider.convex) {
+                                    meshCollider.convex = true;
+                                }
                             }
                         }
 
@@ -134,7 +143,8 @@ namespace TCS.PhysicsDropper {
                                 GameObject = descendant.gameObject,
                                 Collider = collider,
                                 HadCollider = hadCollider,
-                                OriginalIsConvex = originalIsConvex
+                                OriginalIsConvex = originalIsConvex,
+                                OriginalIsTrigger = originalIsTrigger // Store the original isTrigger
                             }
                         );
                     }
@@ -146,16 +156,25 @@ namespace TCS.PhysicsDropper {
                     var collider = obj.GetComponent<Collider>();
                     bool hadCollider = collider;
                     var originalIsConvex = true;
+                    var originalIsTrigger = false; // Initialize the variable
 
                     if (!collider) {
                         // Add MeshCollider without registering with Undo
                         collider = obj.AddComponent<MeshCollider>();
                         ((MeshCollider)collider).convex = true;
+                        collider.isTrigger = false; // Ensure it's not a trigger
                     }
-                    else if (collider is MeshCollider meshCollider) {
-                        originalIsConvex = meshCollider.convex;
-                        if (!meshCollider.convex) {
-                            meshCollider.convex = true;
+                    else {
+                        originalIsTrigger = collider.isTrigger; // Store original isTrigger
+                        if (originalIsTrigger) {
+                            collider.isTrigger = false; // Set to false for simulation
+                        }
+
+                        if (collider is MeshCollider meshCollider) {
+                            originalIsConvex = meshCollider.convex;
+                            if (!meshCollider.convex) {
+                                meshCollider.convex = true;
+                            }
                         }
                     }
 
@@ -163,7 +182,9 @@ namespace TCS.PhysicsDropper {
                     physicsDropperObject.Collider = collider;
                     physicsDropperObject.HadCollider = hadCollider;
                     physicsDropperObject.OriginalIsConvex = originalIsConvex;
+                    physicsDropperObject.OriginalIsTrigger = originalIsTrigger; // Store the original isTrigger
                 }
+
 
                 m_droppingObjects.Add(physicsDropperObject);
             }
@@ -295,6 +316,9 @@ namespace TCS.PhysicsDropper {
                             meshCollider.convex = colliderData.OriginalIsConvex;
                         }
 
+                        // Restore original isTrigger value
+                        colliderData.Collider.isTrigger = colliderData.OriginalIsTrigger;
+
                         if (!colliderData.HadCollider) {
                             // Remove Collider without registering with Undo
                             Object.DestroyImmediate(colliderData.Collider);
@@ -306,6 +330,9 @@ namespace TCS.PhysicsDropper {
                     if (obj.Collider is MeshCollider meshCollider) {
                         meshCollider.convex = obj.OriginalIsConvex;
                     }
+
+                    // Restore original isTrigger value
+                    obj.Collider.isTrigger = obj.OriginalIsTrigger;
 
                     if (!obj.HadCollider) {
                         // Remove Collider without registering with Undo
