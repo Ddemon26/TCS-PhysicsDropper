@@ -7,8 +7,9 @@ namespace TCS.PhysicsDropper {
         public Collider Collider;
         public bool HadCollider;
         public bool OriginalIsConvex;
+        public bool OriginalIsTrigger; // New field
     }
-
+    
     internal sealed class PhysicsDropperObject
     {
         public GameObject GameObject;
@@ -23,6 +24,7 @@ namespace TCS.PhysicsDropper {
         public CollisionDetectionMode OriginalCollisionDetectionMode;
         public bool OriginalIsKinematic;
         public bool OriginalIsConvex;
+        public bool OriginalIsTrigger; // New field
         public Vector3 OriginalPosition;
         public Quaternion OriginalRotation;
         public float TotalSimulationTime;

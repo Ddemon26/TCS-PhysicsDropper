@@ -1,7 +1,10 @@
-## [1.0.2] - 2024-09-10
+## [1.0.3] - 2024-11-08
+- Updated to store collider IsTrigger value and reset it after the object is dropped.
+
+## [1.0.2] - 2024-11-07
 - Updated added components to only give the parent a rigidbody if it doesn't already have one.
 
-## [1.0.1] - 2024-09-10
+## [1.0.1] - 2024-11-06
 -Updating the package to include the missing `TCS-PhysicsDropper` folder.
 
 ## [1.0.0]
