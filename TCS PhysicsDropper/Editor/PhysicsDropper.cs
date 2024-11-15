@@ -8,7 +8,7 @@ using Object = UnityEngine.Object;
 namespace TCS.PhysicsDropper {
     internal enum StoppingCriteria {
         TimeAfterImpact,
-        VelocityThreshold
+        VelocityThreshold,
     }
 
     internal sealed class PhysicsDropper {
@@ -102,7 +102,7 @@ namespace TCS.PhysicsDropper {
                     OriginalPosition = originalPosition,
                     OriginalRotation = originalRotation,
                     TotalSimulationTime = 0f,
-                    ColliderDataList = new List<ColliderData>()
+                    ColliderDataList = new List<ColliderData>(),
                 };
 
                 if (obj.transform.childCount > 0) {
@@ -144,7 +144,7 @@ namespace TCS.PhysicsDropper {
                                 Collider = collider,
                                 HadCollider = hadCollider,
                                 OriginalIsConvex = originalIsConvex,
-                                OriginalIsTrigger = originalIsTrigger // Store the original isTrigger
+                                OriginalIsTrigger = originalIsTrigger, // Store the original isTrigger
                             }
                         );
                     }
