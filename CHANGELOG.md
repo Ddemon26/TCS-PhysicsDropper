@@ -1,3 +1,6 @@
+## [1.0.4] - 2024-11-19
+- Hotfix: fixed typo on icon image for resource folder.
+
 ## [1.0.3] - 2024-11-08
 - Updated to store collider IsTrigger value and reset it after the object is dropped.
 
