@@ -1,3 +1,6 @@
+## [1.0.5] - 2024-11-20
+- Hotfix: fixed typo on icon image for resource folder.
+
 ## [1.0.4] - 2024-11-19
 - Hotfix: fixed typo on icon image for resource folder.
 

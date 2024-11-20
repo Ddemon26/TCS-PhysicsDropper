@@ -2,7 +2,7 @@
   "name": "com.tcs.physicsdropper",
   "displayName": "TCS Physics Dropper",
   "description": "A simple navigation system for Unity",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "keywords": ["TCS", "Physics", "Dropper", "Tool", "Editor"],
   "category": "Tent City Studio",
   "dependencies": {},
