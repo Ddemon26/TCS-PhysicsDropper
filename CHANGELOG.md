@@ -1,5 +1,6 @@
 ## [1.0.5] - 2024-11-20
 - Hotfix: fixed typo on icon image for resource folder.
+- Hotfix: added delay to resource folder to allow for the icon to be loaded.
 
 ## [1.0.4] - 2024-11-19
 - Hotfix: fixed typo on icon image for resource folder.
