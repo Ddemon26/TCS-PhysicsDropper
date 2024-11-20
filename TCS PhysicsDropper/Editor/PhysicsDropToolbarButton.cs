@@ -9,10 +9,13 @@ namespace TCS.PhysicsDropper {
         public const string ID = "PhysicsDropToolbarButton";
         readonly PhysicsDropper m_physicsDropper = new();
         public EditorWindow containerWindow { get; set; }
+        
+        // Preload in a static field for better performance
+        static readonly Texture2D PreloadedIcon = Resources.Load<Texture2D>("D_ConstantForceRed");
+
 
         public PhysicsDropToolbarButton() {
-            icon = Resources.Load<Texture2D>("D_ConstantForceRed");
-                SceneView.RepaintAll();
+            icon = PreloadedIcon;
             if (!icon) {
                 Debug.LogError("Sprite 'D_ConstantForceRed' not found in Resources.");
             }
