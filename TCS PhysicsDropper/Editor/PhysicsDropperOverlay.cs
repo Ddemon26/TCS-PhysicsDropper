@@ -10,14 +10,12 @@ namespace TCS.PhysicsDropper {
 
         public override void OnCreated() {
             base.OnCreated();
-            EditorApplication.delayCall += () => {
-                var sprite = Resources.Load<Texture2D>("D_ConstantForceRed");
-                if (sprite) {
-                    collapsedIcon = sprite;
-                } else {
-                    Debug.LogError("Sprite 'D_ConstantForceRed' not found in Resources.");
-                }
-            };
+            var sprite = Resources.Load<Texture2D>("D_ConstantForceRed");
+            if (sprite) {
+                collapsedIcon = sprite;
+            } else {
+                Debug.LogError("Sprite 'D_ConstantForceRed' not found in Resources.");
+            }
         }
 
         public override void OnWillBeDestroyed() {
