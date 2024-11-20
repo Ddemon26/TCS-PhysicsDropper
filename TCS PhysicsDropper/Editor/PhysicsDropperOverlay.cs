@@ -14,7 +14,7 @@ namespace TCS.PhysicsDropper {
             if (sprite) {
                 collapsedIcon = sprite;
             } else {
-                Debug.LogError("Sprite 'D_ConstantForceRed' not found in Resources.");
+                Logger.LogError("Sprite 'D_ConstantForceRed' not found in Resources.");
             }
         }
 

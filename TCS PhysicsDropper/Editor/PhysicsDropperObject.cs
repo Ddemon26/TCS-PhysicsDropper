@@ -1,17 +1,15 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 namespace TCS.PhysicsDropper {
-    internal class ColliderData
-    {
+    internal class ColliderData {
         public GameObject GameObject;
         public Collider Collider;
         public bool HadCollider;
         public bool OriginalIsConvex;
-        public bool OriginalIsTrigger; // New field
+        public bool OriginalIsTrigger;
     }
-    
-    internal sealed class PhysicsDropperObject
-    {
+
+    internal sealed class PhysicsDropperObject {
         public GameObject GameObject;
         public Rigidbody Rigidbody;
         public bool HadRigidbody;
@@ -24,10 +22,10 @@ namespace TCS.PhysicsDropper {
         public CollisionDetectionMode OriginalCollisionDetectionMode;
         public bool OriginalIsKinematic;
         public bool OriginalIsConvex;
-        public bool OriginalIsTrigger; // New field
+        public bool OriginalIsTrigger;
         public Vector3 OriginalPosition;
         public Quaternion OriginalRotation;
         public float TotalSimulationTime;
-        public List<ColliderData> ColliderDataList; // New field to store collider data of descendants
+        public List<ColliderData> ColliderDataList;
     }
 }
