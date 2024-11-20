@@ -17,7 +17,7 @@ namespace TCS.PhysicsDropper {
         public PhysicsDropToolbarButton() {
             icon = PreloadedIcon;
             if (!icon) {
-                Debug.LogError("Sprite 'D_ConstantForceRed' not found in Resources.");
+                Logger.LogError("Sprite 'D_ConstantForceRed' not found in Resources.");
             }
             name = "PhysicsDropToolbarButton";
             tooltip = L10n.Tr("Physics Dropper");

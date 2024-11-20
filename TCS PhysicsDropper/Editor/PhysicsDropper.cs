@@ -35,7 +35,7 @@ namespace TCS.PhysicsDropper {
             GameObject[] selectedObjects = Selection.gameObjects;
 
             if (selectedObjects.Length == 0) {
-                Debug.LogError("Physics Dropper: No GameObjects selected!");
+                Logger.LogError("No GameObjects selected!");
                 SendFalseBool?.Invoke(false);
                 return;
             }
@@ -44,7 +44,7 @@ namespace TCS.PhysicsDropper {
             bool hasAtLeastOneMeshRenderer = selectedObjects.Any(HasMeshRenderer);
 
             if (!hasAtLeastOneMeshRenderer) {
-                Debug.LogError("Physics Dropper: At least one selected GameObject or its children must have a MeshRenderer component.");
+                Logger.LogError("At least one selected GameObject or its children must have a MeshRenderer component.");
                 return;
             }
 
@@ -52,7 +52,7 @@ namespace TCS.PhysicsDropper {
 
             foreach (var obj in selectedObjects) {
                 if (!obj) {
-                    Debug.LogError("Physics Dropper: One of the selected GameObjects is null!");
+                    Logger.LogError("One of the selected GameObjects is null!");
                     continue;
                 }
 

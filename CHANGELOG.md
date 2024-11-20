@@ -1,3 +1,6 @@
+## [1.0.6] - 2024-11-20
+- Update: added 'Logger.cs' and updated log methods
+
 ## [1.0.5] - 2024-11-20
 - Hotfix: fixed issue were scene view needed a refresh to show the icon from the resource folder.
 - Hotfix: Adjusted the toggle to reflected having no game object selected
