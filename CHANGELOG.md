@@ -1,5 +1,6 @@
 ## [1.0.6] - 2024-11-20
 - Update: added 'Logger.cs' and updated log methods
+- Hotfix: forgot to preload icon in overlay.cs
 
 ## [1.0.5] - 2024-11-20
 - Hotfix: fixed issue were scene view needed a refresh to show the icon from the resource folder.

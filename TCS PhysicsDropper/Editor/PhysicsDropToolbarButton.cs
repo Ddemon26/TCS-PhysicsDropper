@@ -10,7 +10,6 @@ namespace TCS.PhysicsDropper {
         readonly PhysicsDropper m_physicsDropper = new();
         public EditorWindow containerWindow { get; set; }
         
-        // Preload in a static field for better performance
         static readonly Texture2D PreloadedIcon = Resources.Load<Texture2D>("D_ConstantForceRed");
 
 
