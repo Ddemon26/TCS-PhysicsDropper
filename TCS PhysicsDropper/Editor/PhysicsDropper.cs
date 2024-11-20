@@ -36,6 +36,7 @@ namespace TCS.PhysicsDropper {
 
             if (selectedObjects.Length == 0) {
                 Debug.LogError("Physics Dropper: No GameObjects selected!");
+                SendFalseBool?.Invoke(false);
                 return;
             }
 
