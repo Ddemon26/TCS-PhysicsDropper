@@ -1,5 +1,6 @@
 ## [1.0.5] - 2024-11-20
 - Hotfix: fixed issue were scene view needed a refresh to show the icon from the resource folder.
+- Hotfix: Adjusted the toggle to reflected having no game object selected
 
 ## [1.0.4] - 2024-11-19
 - Hotfix: fixed typo on icon image for resource folder.
