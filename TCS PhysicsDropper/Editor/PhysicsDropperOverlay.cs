@@ -8,9 +8,11 @@ namespace TCS.PhysicsDropper {
     internal sealed class PhysicsDropperOverlay : Overlay, ICreateToolbar {
         public override VisualElement CreatePanelContent() => new PhysicsDropToolbarButton();
 
+        static readonly Texture2D PreloadedIcon = Resources.Load<Texture2D>("D_ConstantForceRed");
+
         public override void OnCreated() {
             base.OnCreated();
-            var sprite = Resources.Load<Texture2D>("D_ConstantForceRed");
+            var sprite = PreloadedIcon;
             if (sprite) {
                 collapsedIcon = sprite;
             } else {
