@@ -11,7 +11,10 @@ namespace TCS.PhysicsDropper {
         public EditorWindow containerWindow { get; set; }
 
         public PhysicsDropToolbarButton() {
-            icon = Resources.Load<Sprite>("D_ConstantForceRed").texture;
+            icon = Resources.Load<Texture2D>("D_ConstantForceRed");
+            if (!icon) {
+                Debug.LogError("Sprite 'D_ConstantForceRed' not found in Resources.");
+            }
             name = "PhysicsDropToolbarButton";
             tooltip = L10n.Tr("Physics Dropper");
             dropdownClicked += () => PopupWindow.Show(worldBound, new PhysicsDropperWindow(m_physicsDropper));
