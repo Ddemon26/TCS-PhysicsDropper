@@ -10,13 +10,13 @@ namespace TCS.PhysicsDropper {
         readonly PhysicsDropper m_physicsDropper = new();
         public EditorWindow containerWindow { get; set; }
         
-        static readonly Texture2D PreloadedIcon = Resources.Load<Texture2D>("D_ConstantForceRed");
-
-
+        static readonly Texture2D PreloadedIcon = EditorGUIUtility
+            .IconContent("ConstantForce Icon").image as Texture2D;
+        
         public PhysicsDropToolbarButton() {
-            icon = PreloadedIcon ? PreloadedIcon : DebugIconFallback();
+            icon = PreloadedIcon;
             if (!icon) {
-                Logger.LogError("Sprite 'D_ConstantForceRed' not found in Resources.");
+                Logger.LogError("Sprite 'ConstantForceRed' not found.");
             }
             name = "PhysicsDropToolbarButton";
             tooltip = L10n.Tr("Physics Dropper");
@@ -43,11 +43,6 @@ namespace TCS.PhysicsDropper {
         void OnDetachFromPanel(DetachFromPanelEvent evt) {
             //NO-OP
             //Debug.Log("Element detached from panel");
-        }
-        
-        Texture2D DebugIconFallback() {
-            Logger.Log("Refresh Scene View to load the icon.");
-            return EditorGUIUtility.IconContent("BuildSettings.Broadcom").image as Texture2D;
         }
     }
 }

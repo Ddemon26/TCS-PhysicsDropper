@@ -8,16 +8,15 @@ namespace TCS.PhysicsDropper {
     internal sealed class PhysicsDropperOverlay : Overlay, ICreateToolbar {
         public override VisualElement CreatePanelContent() => new PhysicsDropToolbarButton();
 
-        static readonly Texture2D PreloadedIcon = Resources.Load<Texture2D>("D_ConstantForceRed");
+        static readonly Texture2D PreloadedIcon = EditorGUIUtility.IconContent("ConstantForce Icon").image as Texture2D;
 
         public override void OnCreated() {
             base.OnCreated();
-            var sprite = PreloadedIcon ? PreloadedIcon : DebugIconFallback();
+            var sprite = PreloadedIcon;
             if (sprite) {
                 collapsedIcon = sprite;
-            }
-            else {
-                Logger.LogError("Sprite 'D_ConstantForceRed' not found in Resources.");
+            } else {
+                Logger.LogError("Sprite 'ConstantForceRed' not found.");
             }
         }
 
@@ -27,10 +26,5 @@ namespace TCS.PhysicsDropper {
         }
 
         public IEnumerable<string> toolbarElements { get { yield return PhysicsDropToolbarButton.ID; } }
-
-        Texture2D DebugIconFallback() {
-            Logger.Log("Refresh Scene View to load the icon.");
-            return EditorGUIUtility.IconContent("BuildSettings.Broadcom").image as Texture2D;
-        }
     }
 }
