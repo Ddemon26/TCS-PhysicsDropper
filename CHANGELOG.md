@@ -1,5 +1,6 @@
 ## [1.0.7] - 2024-11-21
 - Update: Fixed issue where all rigid bodies caught in simulation.
+- Enhancement: Changed to TryGet from GetComponent for optimization.
 
 ## [1.0.6] - 2024-11-20
 - Update: added 'Logger.cs' and updated log methods
