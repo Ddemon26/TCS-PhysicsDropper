@@ -1,3 +1,6 @@
+## [1.0.7] - 2024-11-21
+- Update: Fixed issue where all rigid bodies caught in simulation.
+
 ## [1.0.6] - 2024-11-20
 - Update: added 'Logger.cs' and updated log methods
 - Hotfix: forgot to preload icon in overlay.cs
