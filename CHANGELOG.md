@@ -1,10 +1,14 @@
+## [1.0.9] - 2024-11-21
+- Removed: Linq for optimization
+
+## [1.0.8] - 2024-11-21
+- Enhancement: Changed to TryGet from GetComponent for optimization.
+
 ## [1.0.7] - 2024-11-21
 - Update: Fixed issue where all rigid bodies caught in simulation.
-- Enhancement: Changed to TryGet from GetComponent for optimization.
 
 ## [1.0.6] - 2024-11-20
 - Update: added 'Logger.cs' and updated log methods
-- Hotfix: forgot to preload icon in overlay.cs
 - Hotfix: added Default icon to soft fix the issue of the icon not showing up in the scene view.
 - Hotfix: just used unity default icon to save myself all this hassle.
 
