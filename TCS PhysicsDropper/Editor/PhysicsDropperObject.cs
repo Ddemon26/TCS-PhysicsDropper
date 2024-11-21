@@ -1,6 +1,12 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 namespace TCS.PhysicsDropper {
+    internal class RigidbodyState
+    {
+        public Rigidbody Rigidbody;
+        public bool OriginalIsKinematic;
+    }
+    
     internal class ColliderData {
         public GameObject GameObject;
         public Collider Collider;
