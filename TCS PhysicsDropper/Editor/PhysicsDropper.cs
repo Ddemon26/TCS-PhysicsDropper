@@ -380,9 +380,9 @@ namespace TCS.PhysicsDropper {
         }
 
         // Helper method to check for MeshRenderer
-        static bool HasMeshRenderer(GameObject obj) =>
-            obj.GetComponent<MeshRenderer>()
-            || obj.GetComponentsInChildren<Transform>(true)
-                .Any(child => child.GetComponent<MeshRenderer>());
+        static bool HasMeshRenderer(GameObject obj) {
+            return obj.TryGetComponent<MeshRenderer>(out _) || obj.GetComponentsInChildren<Transform>(true).Any(child => child.TryGetComponent<MeshRenderer>(out _));
+
+        }
     }
 }
