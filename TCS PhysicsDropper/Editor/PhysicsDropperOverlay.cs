@@ -12,10 +12,11 @@ namespace TCS.PhysicsDropper {
 
         public override void OnCreated() {
             base.OnCreated();
-            var sprite = PreloadedIcon;
+            var sprite = PreloadedIcon ? PreloadedIcon : DebugIconFallback();
             if (sprite) {
                 collapsedIcon = sprite;
-            } else {
+            }
+            else {
                 Logger.LogError("Sprite 'D_ConstantForceRed' not found in Resources.");
             }
         }
@@ -26,5 +27,10 @@ namespace TCS.PhysicsDropper {
         }
 
         public IEnumerable<string> toolbarElements { get { yield return PhysicsDropToolbarButton.ID; } }
+
+        Texture2D DebugIconFallback() {
+            Logger.Log("Refresh Scene View to load the icon.");
+            return EditorGUIUtility.IconContent("BuildSettings.Broadcom").image as Texture2D;
+        }
     }
 }

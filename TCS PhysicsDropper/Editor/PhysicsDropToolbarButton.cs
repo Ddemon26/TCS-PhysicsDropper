@@ -14,7 +14,7 @@ namespace TCS.PhysicsDropper {
 
 
         public PhysicsDropToolbarButton() {
-            icon = PreloadedIcon;
+            icon = PreloadedIcon ? PreloadedIcon : DebugIconFallback();
             if (!icon) {
                 Logger.LogError("Sprite 'D_ConstantForceRed' not found in Resources.");
             }
@@ -43,6 +43,11 @@ namespace TCS.PhysicsDropper {
         void OnDetachFromPanel(DetachFromPanelEvent evt) {
             //NO-OP
             //Debug.Log("Element detached from panel");
+        }
+        
+        Texture2D DebugIconFallback() {
+            Logger.Log("Refresh Scene View to load the icon.");
+            return EditorGUIUtility.IconContent("BuildSettings.Broadcom").image as Texture2D;
         }
     }
 }
