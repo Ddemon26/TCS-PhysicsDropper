@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -33,7 +32,13 @@ namespace TCS.PhysicsDropper {
             }
 
             // Check for at least one MeshRenderer in selected objects or their children
-            bool hasAtLeastOneMeshRenderer = selectedObjects.Any(HasMeshRenderer);
+            var hasAtLeastOneMeshRenderer = false;
+            foreach (var obj in selectedObjects) {
+                
+                if (!HasMeshRenderer(obj)) continue;
+                hasAtLeastOneMeshRenderer = true;
+                break;
+            }
 
             if (!hasAtLeastOneMeshRenderer) {
                 Logger.LogError("At least one selected GameObject or its children must have a MeshRenderer component.");
@@ -116,7 +121,7 @@ namespace TCS.PhysicsDropper {
 
             m_isDropping = true;
             EditorApplication.update += UpdatePhysics;
-            
+
             Undo.undoRedoPerformed += OnUndoRedoPerformed;
         }
 
@@ -250,7 +255,9 @@ namespace TCS.PhysicsDropper {
 
             // Check if all objects have finished dropping
             var allDone = true;
-            foreach (var obj in m_droppingObjects.Where(obj => !obj.IsDroppingComplete)) {
+            foreach (var obj in m_droppingObjects) {
+                if (obj.IsDroppingComplete) continue;
+
                 // Check if the GameObject or Rigidbody has been destroyed
                 if (!obj.GameObject || !obj.Rigidbody || !obj.DropperComponent) {
                     obj.IsDroppingComplete = true;
@@ -381,8 +388,17 @@ namespace TCS.PhysicsDropper {
 
         // Helper method to check for MeshRenderer
         static bool HasMeshRenderer(GameObject obj) {
-            return obj.TryGetComponent<MeshRenderer>(out _) || obj.GetComponentsInChildren<Transform>(true).Any(child => child.TryGetComponent<MeshRenderer>(out _));
+            if (obj.TryGetComponent<MeshRenderer>(out _)) {
+                return true;
+            }
 
+            foreach (var child in obj.GetComponentsInChildren<Transform>(true)) {
+                if (child.TryGetComponent<MeshRenderer>(out _)) {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }
