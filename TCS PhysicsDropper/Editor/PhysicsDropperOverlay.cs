@@ -12,6 +12,8 @@ namespace TCS.PhysicsDropper {
 
         public override void OnCreated() {
             base.OnCreated();
+            displayName = "Physics Dropper";
+            rootVisualElement.viewDataKey = "PhysicsDropperOverlay";
             var sprite = PreloadedIcon;
             if (sprite) {
                 collapsedIcon = sprite;

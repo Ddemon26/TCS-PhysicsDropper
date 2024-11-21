@@ -14,6 +14,7 @@ namespace TCS.PhysicsDropper {
             .IconContent("ConstantForce Icon").image as Texture2D;
         
         public PhysicsDropToolbarButton() {
+            viewDataKey = ID;
             icon = PreloadedIcon;
             if (!icon) {
                 Logger.LogError("Sprite 'ConstantForceRed' not found.");
